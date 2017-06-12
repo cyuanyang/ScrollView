@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.Px;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -48,6 +49,7 @@ public class MyScrollView extends FrameLayout {
 
         public SaveState(Parcelable superState) {
             super(superState);
+
         }
     }
 
@@ -134,7 +136,13 @@ public class MyScrollView extends FrameLayout {
             if (!mScroller.isFinished()) {
                 mScroller.abortAnimation();
             }
-            scrollBy(dx, dy);
+            int scrollY = getScrollY() + dy;
+            if (scrollY < 0){
+                scrollY = 0;
+            }else if (scrollY>getScrollRange()){
+                scrollY = getScrollRange();
+            }
+            scrollTo(getScrollX()+dx , scrollY);
         }
         mLastScroll = AnimationUtils.currentAnimationTimeMillis();
     }
