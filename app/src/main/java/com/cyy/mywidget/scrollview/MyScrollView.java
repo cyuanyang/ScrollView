@@ -1,6 +1,7 @@
 package com.cyy.mywidget.scrollview;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,6 +39,17 @@ public class MyScrollView extends FrameLayout {
     private int mTouchSlop;
     private float mLastY;
     private boolean mDragging;
+
+    /**
+     * 保存数据的
+     * todo
+     */
+    static class SaveState extends BaseSavedState{
+
+        public SaveState(Parcelable superState) {
+            super(superState);
+        }
+    }
 
     public MyScrollView(@NonNull Context context) {
         this(context , null);
@@ -151,17 +163,14 @@ public class MyScrollView extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.e("onInterceptTouchEvent" , "fff"+ev);
         int action = ev.getAction();
         switch (action){
             case MotionEvent.ACTION_DOWN:
                 mDragging = false;
                 mLastY = ev.getY();
-
                 //计算点击的时候是不是滑动
                 mScroller.computeScrollOffset();
                 mDragging = !mScroller.isFinished();
-                Log.e("tag" , mDragging+"111111");
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -195,16 +204,14 @@ public class MyScrollView extends FrameLayout {
         return 0;
     }
 
-    private void initVelocityTrackerIfNotExists()
-    {
+    private void initVelocityTrackerIfNotExists() {
         if (mVelocityTracker == null)
         {
             mVelocityTracker = VelocityTracker.obtain();
         }
     }
 
-    private void recycleVelocityTracker()
-    {
+    private void recycleVelocityTracker() {
         if (mVelocityTracker != null)
         {
             mVelocityTracker.recycle();
@@ -215,8 +222,7 @@ public class MyScrollView extends FrameLayout {
     private int  mActivePointerId = -1;
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
+    public boolean onTouchEvent(MotionEvent event) {
         initVelocityTrackerIfNotExists();
         mVelocityTracker.addMovement(event);
         int action = event.getActionMasked();
@@ -304,7 +310,6 @@ public class MyScrollView extends FrameLayout {
         if (count == 0) {
             return contentHeight;
         }
-
         int scrollRange = getChildAt(0).getBottom();
         final int scrollY = getScrollY();
         final int overScrollBottom = Math.max(0, scrollRange - contentHeight);
@@ -313,7 +318,6 @@ public class MyScrollView extends FrameLayout {
         } else if (scrollY > overScrollBottom) {
             scrollRange += scrollY - overScrollBottom;
         }
-
         return scrollRange;
     }
 
