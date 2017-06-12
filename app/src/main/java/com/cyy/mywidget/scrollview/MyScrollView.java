@@ -95,7 +95,6 @@ public class MyScrollView extends FrameLayout {
         super.addView(child, width, height);
     }
 
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -154,7 +153,7 @@ public class MyScrollView extends FrameLayout {
         }
     }
 
-    private int getScallRange(){
+    private int getScollRange(){
         if (getChildCount()>0){
             int childHeight = getChildHeight();
             FrameLayout.LayoutParams lp = (LayoutParams) getChildAt(0).getLayoutParams();
@@ -180,7 +179,6 @@ public class MyScrollView extends FrameLayout {
         }
     }
 
-
     private int  mActivePointerId = -1;
 
     @Override
@@ -205,10 +203,8 @@ public class MyScrollView extends FrameLayout {
                     mDragging = true;
                 }
                 if (mDragging) {
-                    Log.i(TAG , "dy=="+dy);
-                    overScrollBy(0 , dy, 0, getScrollY() , 0 , getScallRange() , 0 , 300 , true );
+                    overScrollBy(0 , dy, 0, getScrollY() , 0 , getScollRange() , 0 , 300 , true );
                 }
-
                 mLastY = y;
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -222,10 +218,10 @@ public class MyScrollView extends FrameLayout {
                 mDragging = false;
                 mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                 int velocityY = (int) mVelocityTracker.getYVelocity(mActivePointerId);
-                Log.i(TAG , "velocityY="+velocityY);
-                if (Math.abs(velocityY) > mMinimumVelocity) {
+                Log.i(TAG , "velocityY="+velocityY + " mMinimumVelocity = " +mMinimumVelocity);
+                if (getScrollY()>0 && getScrollY()<getScollRange() && Math.abs(velocityY) > mMinimumVelocity) {
                     fling(-velocityY);
-                }else if (mScroller.springBack(0 , getScrollY() , 0 , 0 , 0 , getScallRange())){
+                }else if (mScroller.springBack(0 , getScrollY() , 0 , 0 , 0 , getScollRange())){
                     postInvalidateOnAnimation();
                 }
                 recycleVelocityTracker();
@@ -241,11 +237,14 @@ public class MyScrollView extends FrameLayout {
         Log.e("onOverScrolled" , "onOverScrolled clampedY = >>>>" + clampedY);
         Log.e("scrollY" , ">>>>>>>scrollY = "+scrollY + " mScroller.isFinished() = " + mScroller.isFinished());
         if (!mScroller.isFinished()) {
-            if (clampedY){
-                mScroller.springBack(0,getScrollY() , 0 , 0 ,0 , getScallRange());
-            }
+//            int oldY = getScrollY();
+//            setScrollY(scrollY);
+//            onScrollChanged(0 , scrollY , 0,  oldY);
+//            invalidate();
+//            if (clampedY){
+//                mScroller.springBack(0, getScrollY() , 0 , 0 ,0 , getScallRange());
+//            }
         }
-
         scrollTo(scrollX , scrollY);
         awakenScrollBars();
     }
@@ -285,7 +284,7 @@ public class MyScrollView extends FrameLayout {
 
     public void fling(int velocityY) {
         Log.e("velocityY == " , "getScrollY()  = "+getScrollY() );
-        mScroller.fling(0, offset , 0, velocityY, 0, 0, 0, getScallRange() , 0 , 300);
+        mScroller.fling(0, offset , 0, velocityY, 0, 0, 0, getScollRange() , 0 , 300);
     }
 
     @Override
@@ -296,17 +295,11 @@ public class MyScrollView extends FrameLayout {
                     + " mScroller.finaY=="+mScroller.getFinalY()
                     +" isOverScrolled = " + mScroller.isOverScrolled()
             );
-
-            //最后会跳动
-//            scrollTo(0, mScroller.getCurrY());
-
             //直接用这个计算滚动
-            overScrollBy(0 , mScroller.getCurrY()-getScrollY() , 0 , getScrollY() , 0 , getScallRange() , 0 , 300 , false);
-
-//            if (!awakenScrollBars()) {
-//                // Keep on drawing until the animation has finished.
-//                postInvalidateOnAnimation();
-//            }
+            overScrollBy(0 , mScroller.getCurrY()-getScrollY() , 0 , getScrollY() , 0 , getScollRange() , 0 , 300 , false);
+            if (!awakenScrollBars()) {
+                postInvalidateOnAnimation();
+            }
         }
     }
 }
