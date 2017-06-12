@@ -11,6 +11,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.OverScroller;
 
@@ -22,6 +23,14 @@ import android.widget.OverScroller;
 public class MyScrollView extends FrameLayout {
 
     final static String TAG = MyScrollView.class.getSimpleName();
+
+    private final static int ANIMATED_SCROLL_GAP = 250;
+    private long mLastScroll;
+
+    private int maxOverScrollY;//回弹的最大距离
+    //当滑动当顶部还继续滑动的时候 ScrollView滑动的系数，当为1的时候与手指的速度一样
+    //小于1快与手指 大于1慢于手指
+    private int mOverDyFactor = 4;
 
     private OverScroller mScroller;
     private VelocityTracker mVelocityTracker;
@@ -95,9 +104,33 @@ public class MyScrollView extends FrameLayout {
         super.addView(child, width, height);
     }
 
+    public final void smoothScrollBy(int dx, int dy) {
+        if (getChildCount() == 0) {
+            return;
+        }
+        long duration = AnimationUtils.currentAnimationTimeMillis() - mLastScroll;
+        if (duration > ANIMATED_SCROLL_GAP) {
+            final int height = getHeight();
+            final int bottom = getChildAt(0).getHeight();
+            final int maxY = Math.max(0, bottom - height);
+            final int scrollY = getScrollY();
+            dy = Math.max(0, Math.min(scrollY + dy, maxY)) - scrollY;
+
+            mScroller.startScroll(getScrollY(), scrollY, 0, dy);
+            postInvalidateOnAnimation();
+        } else {
+            if (!mScroller.isFinished()) {
+                mScroller.abortAnimation();
+            }
+            scrollBy(dx, dy);
+        }
+        mLastScroll = AnimationUtils.currentAnimationTimeMillis();
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        maxOverScrollY  = getMeasuredHeight()/2;
         if (getChildCount()>0){
             View child = getChildAt(0);
             final FrameLayout.LayoutParams lp = (LayoutParams) child.getLayoutParams();
@@ -153,7 +186,7 @@ public class MyScrollView extends FrameLayout {
         }
     }
 
-    private int getScollRange(){
+    private int getScrollRange(){
         if (getChildCount()>0){
             int childHeight = getChildHeight();
             FrameLayout.LayoutParams lp = (LayoutParams) getChildAt(0).getLayoutParams();
@@ -192,8 +225,9 @@ public class MyScrollView extends FrameLayout {
         switch (action)
         {
             case MotionEvent.ACTION_DOWN:
-                if (!mScroller.isFinished())
+                if (!mScroller.isFinished()){
                     mScroller.abortAnimation();
+                }
                 mLastY = (int) event.getY();
                 mActivePointerId = event.getPointerId(0);
                 return true;
@@ -203,7 +237,11 @@ public class MyScrollView extends FrameLayout {
                     mDragging = true;
                 }
                 if (mDragging) {
-                    overScrollBy(0 , dy, 0, getScrollY() , 0 , getScollRange() , 0 , 300 , true );
+                    //如果滑动超出边界了 将dy按系数取值
+                    if (getScrollY()<0 || getScrollY()>getScrollRange()){
+                        dy /= mOverDyFactor;
+                    }
+                    overScrollBy(0 , dy, 0, getScrollY() , 0 , getScrollRange() , 0 , maxOverScrollY , true );
                 }
                 mLastY = y;
                 break;
@@ -219,9 +257,9 @@ public class MyScrollView extends FrameLayout {
                 mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                 int velocityY = (int) mVelocityTracker.getYVelocity(mActivePointerId);
                 Log.i(TAG , "velocityY="+velocityY + " mMinimumVelocity = " +mMinimumVelocity);
-                if (getScrollY()>0 && getScrollY()<getScollRange() && Math.abs(velocityY) > mMinimumVelocity) {
+                if (getScrollY()>0 && getScrollY()<getScrollRange() && Math.abs(velocityY) > mMinimumVelocity) {
                     fling(-velocityY);
-                }else if (mScroller.springBack(0 , getScrollY() , 0 , 0 , 0 , getScollRange())){
+                }else if (mScroller.springBack(0 , getScrollY() , 0 , 0 , 0 , getScrollRange())){
                     postInvalidateOnAnimation();
                 }
                 recycleVelocityTracker();
@@ -254,12 +292,9 @@ public class MyScrollView extends FrameLayout {
         return getHeight();
     }
 
-    private int offset;
     @Override
     protected int computeVerticalScrollOffset() {
-        offset = Math.max(0, super.computeVerticalScrollOffset());
-        Log.e("offset" , "offset = " + offset);
-        return offset;
+        return Math.max(0, super.computeVerticalScrollOffset());
     }
 
     @Override
@@ -272,31 +307,24 @@ public class MyScrollView extends FrameLayout {
 
         int scrollRange = getChildAt(0).getBottom();
         final int scrollY = getScrollY();
-        final int overscrollBottom = Math.max(0, scrollRange - contentHeight);
+        final int overScrollBottom = Math.max(0, scrollRange - contentHeight);
         if (scrollY < 0) {
             scrollRange -= scrollY;
-        } else if (scrollY > overscrollBottom) {
-            scrollRange += scrollY - overscrollBottom;
+        } else if (scrollY > overScrollBottom) {
+            scrollRange += scrollY - overScrollBottom;
         }
 
         return scrollRange;
     }
 
     public void fling(int velocityY) {
-        Log.e("velocityY == " , "getScrollY()  = "+getScrollY() );
-        mScroller.fling(0, offset , 0, velocityY, 0, 0, 0, getScollRange() , 0 , 300);
+        mScroller.fling(0, getScrollY() , 0, velocityY, 0, 0, 0, getScrollRange() , 0 , maxOverScrollY);
     }
 
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
-
-            Log.e("computeScroll" , "computeScroll>>>>" + mScroller.getCurrY()
-                    + " mScroller.finaY=="+mScroller.getFinalY()
-                    +" isOverScrolled = " + mScroller.isOverScrolled()
-            );
-            //直接用这个计算滚动
-            overScrollBy(0 , mScroller.getCurrY()-getScrollY() , 0 , getScrollY() , 0 , getScollRange() , 0 , 300 , false);
+            overScrollBy(0 , mScroller.getCurrY()-getScrollY() , 0 , getScrollY() , 0 , getScrollRange() , 0 , maxOverScrollY , false);
             if (!awakenScrollBars()) {
                 postInvalidateOnAnimation();
             }

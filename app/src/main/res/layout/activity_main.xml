@@ -1,70 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.cyy.mywidget.scrollview.MyScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scrollView"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
-    tools:context="com.cyy.mywidget.MainActivity">
-
+    android:orientation="vertical">
     <LinearLayout
-        android:id="@+id/scrollViewContainer"
         android:layout_width="match_parent"
-        android:layout_height="1000000dp"
-        android:orientation="vertical">
-
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MyScrollView:"/>
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="11222"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="11222"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="11222"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="11222"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="11222"/>
-
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="11222"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="11222"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:text="11212"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:text="11212"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:text="11212"/>
-
+            android:id="@+id/scrollBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="滚动300"/>
     </LinearLayout>
 
-</com.cyy.mywidget.scrollview.MyScrollView>
+    <com.cyy.mywidget.scrollview.MyScrollView
+        android:id="@+id/myScrollView"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        tools:context="com.cyy.mywidget.MainActivity">
+
+        <LinearLayout
+            android:id="@+id/myScrollViewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="1000000dp"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="1"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="2"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="3"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="4"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="5"/>
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="6"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="7"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="8"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="9"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="10"/>
+
+        </LinearLayout>
+
+    </com.cyy.mywidget.scrollview.MyScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="system:"/>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        tools:context="com.cyy.mywidget.MainActivity">
+        <LinearLayout
+            android:id="@+id/scrollViewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="1000000dp"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="1"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="2"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="3"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="4"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="5"/>
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="6"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="7"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="8"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="9"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:text="10"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>
+
