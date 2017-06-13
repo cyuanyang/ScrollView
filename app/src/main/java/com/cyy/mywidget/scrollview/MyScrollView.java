@@ -212,16 +212,17 @@ public class MyScrollView extends FrameLayout {
         return 0;
     }
 
-    private void initVelocityTrackerIfNotExists() {
-        if (mVelocityTracker == null)
-        {
+    //down事件的时候调用 初始化它
+    private void initVelocityTrackerIfNotExists(MotionEvent event) {
+        if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
         }
+        mVelocityTracker.addMovement(event);
     }
 
+    //cancle或者Up事件的时候调用 销毁它
     private void recycleVelocityTracker() {
-        if (mVelocityTracker != null)
-        {
+        if (mVelocityTracker != null) {
             mVelocityTracker.recycle();
             mVelocityTracker = null;
         }
@@ -231,8 +232,7 @@ public class MyScrollView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        initVelocityTrackerIfNotExists();
-        mVelocityTracker.addMovement(event);
+        initVelocityTrackerIfNotExists(event);
         int action = event.getActionMasked();
         float y = event.getY();
 
